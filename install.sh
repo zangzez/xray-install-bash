@@ -30,7 +30,7 @@ set -euo pipefail
 
 # ---------- 默认参数 ----------
 PORT=443
-SNI="www.microsoft.com"
+SNI="addons.mozilla.org"
 UUID=""
 NON_INTERACTIVE=0
 ACTION="install"
@@ -188,7 +188,9 @@ install_xray() {
 install_xray_release() {
     local arch version tmp
     arch="$(xray_arch)"
-    version="$(curl -fsSL "$RELEASE_API" | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/')" || true
+    local release_json
+    release_json="$(curl -fsSL "$RELEASE_API")" || true
+    version="$(printf '%s' "$release_json" | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/')" || true
     [[ -n "$version" ]] || die "获取 Xray 最新版本失败（GitHub API 不可达或被限流）"
 
     yellow "下载 Xray ${version} (linux-${arch})..."
@@ -235,9 +237,9 @@ gen_keys() {
     out="$("$XRAY_BIN" x25519)"
     # 兼容新旧版本输出格式：
     #   旧: "Private key: xxx" / "Public key: yyy"
-    #   新: "PrivateKey: xxx"  / "Password: yyy"
-    PRIVATE_KEY="$(awk -F': *' 'tolower($1) ~ /^private ?key$/ {print $2}' <<<"$out")"
-    PUBLIC_KEY="$(awk -F': *' 'tolower($1) ~ /^(public ?key|password)$/ {print $2}' <<<"$out")"
+    #   新: "PrivateKey: xxx"  / "Password (PublicKey): yyy"
+    PRIVATE_KEY="$(awk -F': *' 'tolower($1) ~ /^private ?key$/ {print $2; exit}' <<<"$out")"
+    PUBLIC_KEY="$(awk -F': *' 'tolower($1) ~ /^(public ?key|password)/ {print $2; exit}' <<<"$out")"
     [[ -n "$PRIVATE_KEY" && -n "$PUBLIC_KEY" ]] || die "生成 x25519 密钥失败: $out"
 
     SHORT_ID="$(openssl rand -hex 8)"
