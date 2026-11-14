@@ -40,7 +40,7 @@ XRAY_BIN="/usr/local/bin/xray"
 XRAY_ASSET_DIR="/usr/local/share/xray"
 XRAY_CONF_DIR="/usr/local/etc/xray"
 XRAY_CONF="${XRAY_CONF_DIR}/config.json"
-INFO_FILE="${XRAY_CONF_DIR}/client-info.txt"
+INFO_FILE="${HOME}/xray-client-info.txt"
 OPENRC_SERVICE="/etc/init.d/xray"
 OPENRC_LOG="/var/log/xray/xray.log"
 BBR_CONF="/etc/sysctl.d/99-xray-bbr.conf"
@@ -385,7 +385,7 @@ save_and_show_info() {
     ip="$(get_public_ip)"
     node_name="xray-reality-${ip}"
     link="vless://${UUID}@${ip}:${PORT}?encryption=none&flow=xtls-rprx-vision&security=reality&sni=${SNI}&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}&type=tcp&headerType=none#${node_name}"
-    yaml_file="${XRAY_CONF_DIR}/clash-proxy.yaml"
+    yaml_file="${HOME}/clash-proxy.yaml"
 
     cat >"$INFO_FILE" <<EOF
 ================ Xray 客户端配置 ================
@@ -458,7 +458,7 @@ do_info() {
     [[ -f "$INFO_FILE" ]] || die "未找到配置信息，请先安装"
     detect_init
     cat "$INFO_FILE"
-    local yaml_file="${XRAY_CONF_DIR}/clash-proxy.yaml"
+    local yaml_file="${HOME}/clash-proxy.yaml"
     if [[ -f "$yaml_file" ]]; then
         echo
         green "======== Clash/Mihomo 订阅节点 ========"
