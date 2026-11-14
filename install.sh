@@ -238,8 +238,7 @@ gen_keys() {
     #   新: "PrivateKey: xxx"  / "Password: yyy"
     PRIVATE_KEY="$(awk -F': *' 'tolower($1) ~ /^private ?key$/ {print $2}' <<<"$out")"
     PUBLIC_KEY="$(awk -F': *' 'tolower($1) ~ /^(public ?key|password)$/ {print $2}' <<<"$out")"
-#    [[ -n "$PRIVATE_KEY" && -n "$PUBLIC_KEY" ]] || die "生成 x25519 密钥失败: $out"
-    [[ -n "$PRIVATE_KEY" && -n "$PUBLIC_KEY" ]]
+    [[ -n "$PRIVATE_KEY" && -n "$PUBLIC_KEY" ]] || die "生成 x25519 密钥失败: $out"
 
     SHORT_ID="$(openssl rand -hex 8)"
 }
