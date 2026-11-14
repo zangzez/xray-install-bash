@@ -11,22 +11,77 @@
 
 ## 快速开始
 
+### 一键安装（在线执行）
+
+在服务器终端中执行以下命令即可启动一键安装（支持交互式配置）：
+
+**使用 curl：**
+
 ```bash
-# 上传 install.sh 到服务器后执行
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/zangzez/xray-install-bash/main/install.sh)"
+```
+
+**或使用 wget：**
+
+```bash
+bash -c "$(wget -qO- https://raw.githubusercontent.com/zangzez/xray-install-bash/main/install.sh)"
+```
+
+> **提示**：请使用 root 权限运行（非 root 用户请在前面加 `sudo` 或执行 `sudo -i` 切换）。按提示输入端口和伪装域名，直接回车使用默认值（端口 `443`，伪装域名 `www.microsoft.com`）。
+
+### 常用一键命令
+
+- **全部默认值、无交互静默安装**：
+  ```bash
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/zangzez/xray-install-bash/main/install.sh)" @ -y
+  ```
+
+- **自定义端口和伪装域名**：
+  ```bash
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/zangzez/xray-install-bash/main/install.sh)" @ -y --port 8443 --sni www.apple.com
+  ```
+
+- **查看当前配置和分享链接**：
+  ```bash
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/zangzez/xray-install-bash/main/install.sh)" @ info
+  ```
+
+- **升级 Xray 到最新版**：
+  ```bash
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/zangzez/xray-install-bash/main/install.sh)" @ upgrade
+  ```
+
+- **卸载 Xray**：
+  ```bash
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/zangzez/xray-install-bash/main/install.sh)" @ uninstall
+  ```
+
+### Alpine Linux 系统
+
+Alpine 默认未预装 bash，可先安装 curl 和 bash 后运行：
+
+```bash
+apk add --no-cache curl bash && bash -c "$(curl -fsSL https://raw.githubusercontent.com/zangzez/xray-install-bash/main/install.sh)"
+```
+
+或使用 wget 下载脚本后直接通过 `sh` 运行（脚本会自动安装 bash 并切换）：
+
+```bash
+wget -O install.sh https://raw.githubusercontent.com/zangzez/xray-install-bash/main/install.sh && sh install.sh
+```
+
+### 下载脚本到本地执行（可选）
+
+如需将脚本保存在本地进行管理：
+
+```bash
+# 下载脚本
+curl -fsSL https://raw.githubusercontent.com/zangzez/xray-install-bash/main/install.sh -o install.sh
+
+# 交互式运行
 sudo bash install.sh
-```
 
-按提示输入端口和伪装域名，直接回车使用默认值（端口 `443`，伪装域名 `www.microsoft.com`）。
-
-Alpine 默认没有 bash，可以直接用 `sh` 运行，脚本会自动安装 bash：
-
-```bash
-sh install.sh
-```
-
-全部使用默认值、无交互安装：
-
-```bash
+# 全部默认值、无交互安装
 sudo bash install.sh -y
 ```
 
@@ -112,18 +167,20 @@ bash install.sh info
 systemd 系统：
 
 ```bash
-systemctl status xray      # 查看状态
+systemctl start xray       # 启动
 systemctl restart xray     # 重启
 systemctl stop xray        # 停止
+systemctl status xray      # 查看状态
 journalctl -u xray -f      # 查看实时日志
 ```
 
 Alpine（OpenRC）：
 
 ```bash
-rc-service xray status             # 查看状态
+rc-service xray start              # 启动
 rc-service xray restart            # 重启
 rc-service xray stop               # 停止
+rc-service xray status             # 查看状态
 tail -f /var/log/xray/xray.log     # 查看实时日志
 ```
 
